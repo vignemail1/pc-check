@@ -17,6 +17,12 @@ This PowerShell script collects various system information for analysis.
 - **WMI Information**: Processor, BIOS, and system details collected via WMI.
 - **Windows Event Logs**: Recent event logs from various Windows Event log categories.
 - **PNP Entities**: List of Plug and Play entities on the system.
+- **Browser History**: For each browser (Chrome, Edge, Brave, Opera GX, Firefox):
+    - The history file is copied for each profile into a dedicated directory:
+        > ```text
+        > C:\PCCheck\BrowserHistory\<BrowserName>\
+        > ```
+    - You can analyze these files externally using appropriate tools.
 
 ### Running the Script
 
@@ -51,6 +57,12 @@ Ce script PowerShell collecte diverses informations système pour analyse.
 - **Informations WMI** : Détails sur le processeur, la BIOS et le système collectés via WMI.
 - **Logs Windows Event** : Logs d'événements récents provenant de diverses catégories de logs Windows Event.
 - **Entités PNP** : Liste des entités Plug and Play sur le système.
+- **Historique des navigateurs** : Pour chaque navigateur (Chrome, Edge, Brave, Opera GX, Firefox) :
+    - Le fichier d'historique est copié pour chaque profil dans un répertoire dédié :
+        > ```text
+        > C:\PCCheck\BrowserHistory\<NomDuNavigateur>\
+        > ```
+    - Vous pouvez analyser ces fichiers en externe à l'aide d'outils appropriés.
 
 ### Exécution du script
 

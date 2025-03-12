@@ -277,4 +277,63 @@ try {
     Write-ErrorLog "Error collecting PNP entities: $($Error[0].Message)"
 }
 
+# 10. Collect browser history
+Write-Host "`nCollecting browser history..."
+$browserHistoryDir = Join-Path $logDir "BrowserHistory"
+if (!(Test-Path $browserHistoryDir)) {
+    New-Item -ItemType Directory -Path $browserHistoryDir
+}
+
+try {
+    # Browsers configuration
+    $browsers = @{
+        "Chrome" = @{
+            Path = "$Env:LOCALAPPDATA\Google\Chrome\User Data"
+            Profiles = Get-ChildItem -Path "$Env:LOCALAPPDATA\Google\Chrome\User Data" -Directory
+            HistoryFile = "History"
+        }
+        "Edge" = @{
+            Path = "$Env:LOCALAPPDATA\Microsoft\Edge\User Data"
+            Profiles = Get-ChildItem -Path "$Env:LOCALAPPDATA\Microsoft\Edge\User Data" -Directory
+            HistoryFile = "History"
+        }
+        "Brave" = @{
+            Path = "$Env:LOCALAPPDATA\BraveSoftware\Brave-Browser\User Data"
+            Profiles = Get-ChildItem -Path "$Env:LOCALAPPDATA\BraveSoftware\Brave-Browser\User Data" -Directory
+            HistoryFile = "History"
+        }
+        "Opera GX" = @{
+            Path = "$Env:LOCALAPPDATA\Opera Software\Opera GX Stable"
+            Profiles = Get-ChildItem -Path "$Env:LOCALAPPDATA\Opera Software\Opera GX Stable" -Directory
+            HistoryFile = "History"
+        }
+        "Firefox" = @{
+            Path = "$Env:APPDATA\Mozilla\Firefox\Profiles"
+            Profiles = Get-ChildItem -Path "$Env:APPDATA\Mozilla\Firefox\Profiles" -Directory
+            HistoryFile = "places.sqlite"
+        }
+    }
+
+    foreach ($browser in $browsers.GetEnumerator()) {
+        $browserDir = Join-Path $browserHistoryDir $browser.Name
+        if (!(Test-Path $browserDir)) {
+            New-Item -ItemType Directory -Path $browserDir
+        }
+        
+        foreach ($profile in $browser.Value.Profiles) {
+            $profileName = $profile.Name
+            
+            # Copy history file for each profile
+            $historyPath = Join-Path $profile.FullName $browser.Value.HistoryFile
+            if (Test-Path -Path $historyPath) {
+                $destinationPath = Join-Path $browserDir "$($profileName)_$($browser.Value.HistoryFile)"
+                Copy-Item -Path $historyPath -Destination $destinationPath -Force
+                Add-Content -Path $generalLog -Value "$(Get-Date) - $browser.Name history for profile '$($profileName)' copied to $destinationPath"
+            }
+        }
+    }
+} catch {
+    Write-ErrorLog "Error collecting browser history: $($Error[0].Message)"
+}
+
 Write-Host "`nCollection completed. Check logs in $logDir"
